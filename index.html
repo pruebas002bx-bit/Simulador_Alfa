@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador ALFA - Polígono Virtual de Élite</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* --- Variables de Color y Tipografía --- */
+        :root {
+            --color-negro-fondo: #0a0a0a;
+            --color-negro-secundario: #1a1a1a; /* Para tarjetas */
+            --color-blanco: #ffffff;
+            --color-rojo-principal: #e60000;
+            --color-rojo-hover: #c00000;
+            --color-texto-gris: #cccccc;
+            --color-borde-sutil: #333333;
+            --font-principal: 'Montserrat', sans-serif;
+            --font-secundaria: 'Roboto', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-secundaria);
+            background-color: var(--color-negro-fondo);
+            color: var(--color-texto-gris);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-principal);
+            font-weight: 700;
+            color: var(--color-blanco);
+            text-transform: uppercase;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- Barra de Navegación --- */
+        .navbar {
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 1.25rem 0;
+            border-bottom: 1px solid var(--color-borde-sutil);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            text-decoration: none;
+            display: inline-block;
+        }
+        .logo-img {
+            height: 45px;
+            width: auto;
+            display: block;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+        }
+
+        .nav-menu li {
+            margin-left: 30px;
+        }
+
+        .nav-menu a {
+            color: var(--color-blanco);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            padding-bottom: 8px;
+        }
+        
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--color-rojo-principal);
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        /* --- CORRECCIÓN: El botón "Cotizar" no debe tener subrayado activo --- */
+        .nav-menu a:not(.btn-nav):hover::after,
+        .nav-menu a.active:not(.btn-nav)::after {
+            width: 100%;
+        }
+        
+        .btn-nav {
+            font-size: 0.9rem !important;
+            padding: 12px 28px !important;
+            margin-top: -12px;
+            margin-left: 15px;
+        }
+
+        /* --- Sección Hero --- */
+        .hero {
+            background: linear-gradient(rgba(10, 10, 10, 0.8), rgba(10, 10, 10, 0.8)), url('https://i.ibb.co/S4h7sTkJ/image.png') no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .hero-content {
+            max-width: 800px;
+        }
+
+        .hero-content h1 {
+            font-size: 4.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
+            margin-bottom: 2.5rem;
+            color: var(--color-texto-gris);
+        }
+
+        /* --- Botones (Pill-shaped) --- */
+        .btn {
+            display: inline-block;
+            padding: 15px 35px;
+            text-decoration: none;
+            font-family: var(--font-principal);
+            font-weight: 700;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1rem;
+            border: 2px solid transparent;
+        }
+
+        .btn-red {
+            background-color: var(--color-rojo-principal);
+            color: var(--color-blanco);
+            border-color: var(--color-rojo-principal);
+            box-shadow: 0 5px 20px rgba(230, 0, 0, 0.4);
+        }
+
+        .btn-red:hover {
+            background-color: var(--color-rojo-hover);
+            border-color: var(--color-rojo-hover);
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 10px 30px rgba(230, 0, 0, 0.6);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--color-blanco);
+            border-color: var(--color-blanco);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--color-blanco);
+            color: var(--color-negro-fondo);
+            transform: scale(1.05) translateY(-3px);
+        }
+
+        /* --- Secciones Generales (para otras páginas) --- */
+        .section {
+            padding: 7rem 0;
+            overflow: hidden;
+        }
+        
+        /* --- NUEVO: Espaciador para páginas que no son 'inicio' --- */
+        .page-header {
+            padding-top: 100px; /* Espacio para la navbar fija */
+        }
+        
+        .section-dark {
+            background-color: var(--color-negro-secundario);
+        }
+        .section-black {
+            background-color: var(--color-negro-fondo);
+        }
+
+        .section h2 {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .section .section-subtitle {
+            font-size: 1.15rem;
+            color: var(--color-texto-gris);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 5rem auto;
+        }
+        
+        /* Estilos de Footer (común a todas las páginas) */
+        .footer {
+            background-color: var(--color-negro-fondo);
+            color: var(--color-texto-gris);
+            text-align: center;
+            padding: 5rem 0 2rem 0;
+            border-top: 1px solid var(--color-borde-sutil);
+        }
+
+        .footer .logo {
+            display: inline-block;
+        }
+        .footer .logo .logo-img {
+            height: 60px;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-icons {
+            margin-bottom: 2rem;
+        }
+
+        .social-icons a {
+            color: #888;
+            margin: 0 15px;
+            font-size: 1.75rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .social-icons a:hover {
+            color: var(--color-rojo-principal);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links li {
+            margin: 0.5rem 15px;
+        }
+        
+        .footer-links a {
+            color: var(--color-texto-gris);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .footer-links a:hover {
+            color: var(--color-rojo-principal);
+        }
+
+        .footer-copyright {
+            font-size: 0.9rem;
+            color: #777;
+        }
+        
+        /* --- Animaciones de Scroll (Fade-in) --- */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* --- TODOS LOS DEMÁS ESTILOS SE HEREDARÁN EN OTRAS PÁGINAS --- */
+        /* (Se omiten estilos específicos de secciones para mantener este archivo limpio) */
+        /* (En un proyecto real, esto estaría en un CSS externo, pero por simplicidad de la solicitud, se repite en cada HTML) */
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="https://i.ibb.co/hRfM7CSD/Frame-12.png" alt="Simulador ALFA Logo" class="logo-img">
+            </a>
+            
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">Inicio</a></li>
+                <li><a href="caracteristicas.html">Características</a></li>
+                <li><a href="novedades.html">Novedades</a></li>
+                <li><a href="plataformas.html">Plataformas</a></li>
+                <li><a href="galeria.html">Galería</a></li>
+                <li><a href="contactanos.html" class="btn btn-red btn-nav">Cotizar</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero" id="inicio">
+        <div class="hero-content fade-in visible">
+            <h1>SIMULADOR ALFA</h1>
+            <p>El polígono virtual de élite con control total para el instructor. Gestione, ejecute y analice entrenamientos complejos en un sistema seguro y multi-idioma.</p>
+            <a href="caracteristicas.html" class="btn btn-red">Ver Características</a>
+            <a href="contactanos.html" class="btn btn-outline">Solicitar Cotización</a>
+        </div>
+    </header>
+
+    <main></main>
+
+    <footer class="footer">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="https://i.ibb.co/hRfM7CSD/Frame-12.png" alt="Simulador ALFA Logo" class="logo-img">
+            </a>
+            <div class="social-icons">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <ul class="footer-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="caracteristicas.html">Características</a></li>
+                <li><a href="plataformas.html">Plataformas</a></li>
+                <li><a href="galeria.html">Galería</a></li>
+                <li><a href="contactanos.html">Contacto</a></li>
+                <li><a href="#">Soporte</a></li>
+            </ul>
+            <p class="footer-copyright">&copy; 2025 Simulador ALFA. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Animación de Scroll (Fade-in) ---
+            const fadeElements = document.querySelectorAll('.fade-in');
+            const scrollObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            fadeElements.forEach(el => {
+                scrollObserver.observe(el);
+            });
+
+            // --- Lógica de Navegación Activa (Modificada para Multi-página) ---
+            const navLinks = document.querySelectorAll('.nav-menu a');
+            const currentPage = window.location.pathname.split('/').pop();
+
+            navLinks.forEach(link => {
+                const linkPage = link.getAttribute('href');
+                
+                // Si estamos en la página de inicio (index.html o vacío)
+                if (currentPage === '' || currentPage === 'index.html') {
+                    if (linkPage === 'index.html') {
+                        link.classList.add('active');
+                    }
+                } 
+                // Para otras páginas
+                else if (linkPage === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+
+        });
+    </script>
+
+</body>
+</html>

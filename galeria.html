@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería - Simulador ALFA</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* --- Variables de Color y Tipografía --- */
+        :root {
+            --color-negro-fondo: #0a0a0a;
+            --color-negro-secundario: #1a1a1a; /* Para tarjetas */
+            --color-blanco: #ffffff;
+            --color-rojo-principal: #e60000;
+            --color-rojo-hover: #c00000;
+            --color-texto-gris: #cccccc;
+            --color-borde-sutil: #333333;
+            --font-principal: 'Montserrat', sans-serif;
+            --font-secundaria: 'Roboto', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-secundaria);
+            background-color: var(--color-negro-fondo);
+            color: var(--color-texto-gris);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-principal);
+            font-weight: 700;
+            color: var(--color-blanco);
+            text-transform: uppercase;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- Barra de Navegación --- */
+        .navbar {
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 1.25rem 0;
+            border-bottom: 1px solid var(--color-borde-sutil);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            text-decoration: none;
+            display: inline-block;
+        }
+        .logo-img {
+            height: 45px;
+            width: auto;
+            display: block;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+        }
+
+        .nav-menu li {
+            margin-left: 30px;
+        }
+
+        .nav-menu a {
+            color: var(--color-blanco);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            padding-bottom: 8px;
+        }
+        
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--color-rojo-principal);
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .nav-menu a:not(.btn-nav):hover::after,
+        .nav-menu a.active:not(.btn-nav)::after {
+            width: 100%;
+        }
+        
+        .btn-nav {
+            font-size: 0.9rem !important;
+            padding: 12px 28px !important;
+            margin-top: -12px;
+            margin-left: 15px;
+        }
+        
+        /* --- Botones (Pill-shaped) --- */
+        .btn {
+            display: inline-block;
+            padding: 15px 35px;
+            text-decoration: none;
+            font-family: var(--font-principal);
+            font-weight: 700;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1rem;
+            border: 2px solid transparent;
+        }
+
+        .btn-red {
+            background-color: var(--color-rojo-principal);
+            color: var(--color-blanco);
+            border-color: var(--color-rojo-principal);
+            box-shadow: 0 5px 20px rgba(230, 0, 0, 0.4);
+        }
+
+        .btn-red:hover {
+            background-color: var(--color-rojo-hover);
+            border-color: var(--color-rojo-hover);
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 10px 30px rgba(230, 0, 0, 0.6);
+        }
+
+
+        /* --- Secciones Generales --- */
+        .section {
+            padding: 7rem 0;
+            overflow: hidden;
+        }
+        
+        .page-header {
+            padding-top: 100px; /* Espacio para la navbar fija */
+        }
+
+        .section-dark {
+            background-color: var(--color-negro-secundario);
+        }
+        .section-black {
+            background-color: var(--color-negro-fondo);
+        }
+
+        .section h2 {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .section .section-subtitle {
+            font-size: 1.15rem;
+            color: var(--color-texto-gris);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 5rem auto;
+        }
+
+        /* --- Sección Galería/Videos --- */
+        .media-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+        }
+        
+        @media (min-width: 768px) {
+            .media-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .media-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            transition: transform 0.4s ease;
+            cursor: pointer; 
+        }
+        
+        .media-item:hover {
+            transform: scale(1.03);
+        }
+        
+        .media-item img {
+            width: 100%;
+            display: block;
+            object-fit: cover;
+            height: 350px;
+        }
+        
+        .media-item-video {
+            grid-column: 1 / -1;
+        }
+        
+        .media-item-video img {
+            height: 500px;
+        }
+
+        .media-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.8));
+            padding: 2rem;
+            text-align: center;
+            pointer-events: none;
+        }
+        
+        .media-overlay i {
+            font-size: 4rem;
+            color: var(--color-blanco);
+            opacity: 0.8;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .media-item:hover .media-overlay i {
+            transform: scale(1.1);
+            color: var(--color-rojo-principal);
+            opacity: 1;
+        }
+        
+        .media-overlay h3 {
+            font-size: 2rem;
+            color: var(--color-blanco);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+        }
+
+        /* --- SECCIÓN LIGHTBOX --- */
+        .lightbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .lightbox-thumb {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid var(--color-borde-sutil);
+        }
+        
+        /* --- CORRECCIÓN: Estilo unificado para todas las miniaturas del lightbox --- */
+        .media-item .lightbox-thumb {
+            height: 100%;
+            border-radius: 0; /* Las imágenes de media-item ya tienen borde redondeado en el contenedor */
+            border: none;
+        }
+        .media-item-video .lightbox-thumb {
+            height: 500px;
+        }
+        
+        .lightbox-thumb:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            border-color: var(--color-rojo-principal);
+        }
+        
+        .media-item:hover .lightbox-thumb {
+            transform: none; /* La transformación ya está en .media-item */
+            box-shadow: none;
+            border-color: transparent;
+        }
+
+
+        .lightbox-modal {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            z-index: 2000; /* Encima de todo */
+            padding: 20px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.95);
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 85vh;
+            animation: zoomIn 0.4s ease;
+        }
+        #lightbox-caption {
+            margin: 15px auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+            text-align: center;
+            color: var(--color-texto-gris);
+            font-size: 1.1rem;
+            line-height: 1.6; /* Mejorado para párrafos largos */
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 25px;
+            right: 45px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .lightbox-close:hover,
+        .lightbox-close:focus {
+            color: var(--color-rojo-principal);
+            text-decoration: none;
+        }
+        @keyframes zoomIn {
+            from {transform: scale(0.8); opacity: 0;}
+            to {transform: scale(1); opacity: 1;}
+        }
+
+        /* --- Footer --- */
+        .footer {
+            background-color: var(--color-negro-fondo);
+            color: var(--color-texto-gris);
+            text-align: center;
+            padding: 5rem 0 2rem 0;
+            border-top: 1px solid var(--color-borde-sutil);
+        }
+
+        .footer .logo {
+            display: inline-block;
+        }
+        .footer .logo .logo-img {
+            height: 60px;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-icons {
+            margin-bottom: 2rem;
+        }
+
+        .social-icons a {
+            color: #888;
+            margin: 0 15px;
+            font-size: 1.75rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .social-icons a:hover {
+            color: var(--color-rojo-principal);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links li {
+            margin: 0.5rem 15px;
+        }
+        
+        .footer-links a {
+            color: var(--color-texto-gris);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .footer-links a:hover {
+            color: var(--color-rojo-principal);
+        }
+
+        .footer-copyright {
+            font-size: 0.9rem;
+            color: #777;
+        }
+        
+        /* --- Animaciones de Scroll (Fade-in) --- */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="https://i.ibb.co/hRfM7CSD/Frame-12.png" alt="Simulador ALFA Logo" class="logo-img">
+            </a>
+            
+            <ul class="nav-menu">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="caracteristicas.html">Características</a></li>
+                <li><a href="novedades.html">Novedades</a></li>
+                <li><a href="plataformas.html">Plataformas</a></li>
+                <li><a href="galeria.html" class="active">Galería</a></li>
+                <li><a href="contactanos.html" class="btn btn-red btn-nav">Cotizar</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+
+        <div class="page-header"></div>
+
+        <section id="media" class="section section-black" style="padding-top: 4rem;">
+            <div class="container">
+                <h2 class="fade-in">Galería de Escenarios y Videos</h2>
+                <p class="section-subtitle fade-in">Visualice la inmersión de ALFA. Nuestra plataforma se sincroniza con su carpeta '3.Escenarios' para cargar contenido nuevo y personalizado.</p>
+                
+                <div class="media-grid">
+                    
+                    <div class="media-item media-item-video fade-in">
+                        <img src="https://i.ibb.co/NnGWFYT0/Captura-de-pantalla-2025-11-02-062224.png" 
+                             data-src="https://i.ibb.co/NnGWFYT0/Captura-de-pantalla-2025-11-02-062224.png"
+                             alt="Video de Demostración: Vea el Simulador ALFA en acción con escenarios tácticos, control de instructor y análisis de resultados en tiempo real."
+                             class="lightbox-thumb">
+                        <div class="media-overlay">
+                            <i class="fas fa-play-circle"></i>
+                            <h3>VER VIDEO DE ACCIÓN</h3>
+                        </div>
+                    </div>
+
+                    <div class="media-item fade-in">
+                        <img src="https://i.ibb.co/tPQBStJ7/Captura-de-pantalla-2025-11-02-062401.png"
+                             data-src="https://i.ibb.co/tPQBStJ7/Captura-de-pantalla-2025-11-02-062401.png"
+                             alt="Galería de Escenario Urbano: Entrenamiento de alta intensidad en un entorno de combate urbano simulado, con múltiples objetivos y coberturas."
+                             class="lightbox-thumb">
+                        <div class="media-overlay">
+                            <i class="fas fa-image"></i>
+                            <h3>Escenarios Urbanos</h3>
+                        </div>
+                    </div>
+
+                    <div class="media-item fade-in">
+                        <img src="https://i.ibb.co/99wYnxbs/Captura-de-pantalla-2025-11-02-062451.png"
+                             data-src="https://i.ibb.co/99wYnxbs/Captura-de-pantalla-2025-11-02-062451.png"
+                             alt="Galería de Polígono de Precisión: Práctica de tiro de precisión en un polígono virtual controlado, ideal para el entrenamiento de fundamentos y puntería."
+                             class="lightbox-thumb">
+                        <div class="media-overlay">
+                            <i class="fas fa-image"></i>
+                            <h3>Polígono de Precisión</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="galeria-real" class="section section-dark">
+            <div class="container">
+                <h2 class="fade-in">Galería de Implementaciones</h2>
+                <p class="section-subtitle fade-in">Vea el Simulador ALFA en acción en diferentes configuraciones y agencias. Haga clic en una imagen para ampliar.</p>
+                
+                <div class="lightbox-grid">
+                    <img src="https://i.ibb.co/zV0nc2y6/Captura-de-pantalla-2025-11-02-064051.png" 
+                         data-src="https://i.ibb.co/zV0nc2y6/Captura-de-pantalla-2025-11-02-064051.png" 
+                         alt="Entorno de Simulación de Tiro Virtual para Entrenamiento Dinámico. Este segmento del simulador de tiro presenta un escenario modular y reconfigurable en un entorno exterior (terreno de hierba y tierra), lo que permite simular condiciones de entrenamiento realista en un área de tiro improvisada o un complejo de edificios." 
+                         class="lightbox-thumb fade-in">
+                         
+                    <img src="https://i.ibb.co/hJk90S7j/Captura-de-pantalla-2025-11-02-064404.png" 
+                         data-src="https://i.ibb.co/hJk90S7j/Captura-de-pantalla-2025-11-02-064404.png" 
+                         alt="El blanco de acero tipo estrella es una herramienta crucial en el simulador, diseñada para evaluar la velocidad de adquisición de múltiples objetivos y la gestión de la cadencia de tiro bajo presión. Su función principal es obligar al tirador a transicionar de manera fluida y precisa entre las cinco paletas circulares rojas en el menor tiempo posible." 
+                         class="lightbox-thumb fade-in">
+
+                    <img src="https://i.ibb.co/k6G8cBcd/image.png" 
+                         data-src="https://i.ibb.co/k6G8cBcd/image.png" 
+                         alt="Este escenario de Polígono de Tiro Cubierto a 10 metros es el entorno perfecto para la práctica metódica y el calentamiento de precisión. A diferencia de los escenarios tácticos, su diseño minimalista y controlado (paredes sólidas, iluminación uniforme) elimina distracciones, permitiendo al usuario concentrarse exclusivamente en el alineamiento de miras y el control del gatillo. El blanco de diana de alta visibilidad (color verde neón) facilita el enfoque visual, mientras que el simulador ofrece feedback instantáneo: la Puntuación crece con cada impacto en el centro de la diana, y la Distancia de 10m estandariza el desafío." 
+                         class="lightbox-thumb fade-in">
+                         
+                    <img src="https://i.ibb.co/Lzm1n9xr/image.png" 
+                         data-src="https://i.ibb.co/Lzm1n9xr/image.png" 
+                         alt="Esta escena traslada al usuario a un divertido desafío de puntería en el bosque, ideal para el entretenimiento y el perfeccionamiento de habilidades. El objetivo principal, una silueta de oso con una diana de alto valor, transforma el ejercicio de tiro en un emocionante minijuego de precisión, donde cada impacto cuenta para mejorar tu Puntuación. La interfaz, clara y accesible, proporciona feedback instantáneo, motivando al jugador a refinar su puntería para golpear el centro de la zona crítica." 
+                         class="lightbox-thumb fade-in">
+                         
+                    <img src="https://i.ibb.co/LXL3HmBB/image.png" 
+                         data-src="https://i.ibb.co/LXL3HmBB/image.png" 
+                         alt="Este segmento del simulador representa un área de transición táctica y fuego dinámico, esencial para entrenar la capacidad de disparar en movimiento y desde la cobertura. El escenario presenta una combinación de objetivos de silueta tipo IDPA/IPSC (incluyendo una en color rojo que podría indicar un blanco prioritario o un no-disparar, que se debe identificar rápidamente) y una línea de mini-blancos de precisión verdes situados a ras de suelo. La inclusión de obstáculos variados como cajas de madera, barriles azules y una barrera de concreto obliga al usuario a practicar el tiro desde posiciones poco convencionales (de rodillas, inclinados o en movimiento), permitiendo al simulador medir la velocidad de transición entre los blancos grandes (que requieren potencia y rapidez) y los blancos pequeños (que exigen precisión fina)." 
+                         class="lightbox-thumb fade-in">
+                         
+                    <img src="https://i.ibb.co/4wLGHj1L/image.png" 
+                         data-src="https://i.ibb.co/4wLGHj1L/image.png" 
+                         alt="Este escenario presenta el blanco de diana concéntrica clásica en un entorno de polígono cubierto, y es la herramienta definitiva del simulador para la medición pura de la puntería y la consistencia. Su diseño numerado, con un centro de valor 10, facilita una evaluación métrica inmediata y detallada de cada disparo, permitiendo a los usuarios cuantificar el tamaño de sus agrupaciones y la desviación del punto de mira." 
+                         class="lightbox-thumb fade-in">
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="https://i.ibb.co/hRfM7CSD/Frame-12.png" alt="Simulador ALFA Logo" class="logo-img">
+            </a>
+            <div class="social-icons">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <ul class="footer-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="caracteristicas.html">Características</a></li>
+                <li><a href="plataformas.html">Plataformas</a></li>
+                <li><a href="galeria.html">Galería</a></li>
+                <li><a href="contactanos.html">Contacto</a></li>
+                <li><a href="#">Soporte</a></li>
+            </ul>
+            <p class="footer-copyright">&copy; 2025 Simulador ALFA. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <div id="lightbox-modal" class="lightbox-modal">
+        <span class="lightbox-close">×</span>
+        <img class="lightbox-content" id="lightbox-image">
+        <div id="lightbox-caption"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Animación de Scroll (Fade-in) ---
+            const fadeElements = document.querySelectorAll('.fade-in');
+            const scrollObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            fadeElements.forEach(el => {
+                scrollObserver.observe(el);
+            });
+
+            // --- Lógica de Navegación Activa ---
+            const navLinks = document.querySelectorAll('.nav-menu a');
+            const currentPage = window.location.pathname.split('/').pop();
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // --- Lógica de la Galería Lightbox ---
+            const modal = document.getElementById("lightbox-modal");
+            const modalImg = document.getElementById("lightbox-image");
+            const captionText = document.getElementById("lightbox-caption");
+            
+            const thumbnails = document.querySelectorAll(".lightbox-thumb"); 
+            const closeModal = document.querySelector(".lightbox-close");
+
+            thumbnails.forEach(thumb => {
+                thumb.onclick = function() {
+                    modal.style.display = "flex"; 
+                    modalImg.src = this.dataset.src || this.src; 
+                    captionText.innerHTML = this.alt;
+                }
+            });
+
+            const closeLightbox = () => {
+                modal.style.display = "none";
+            }
+
+            closeModal.onclick = closeLightbox;
+            
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    closeLightbox();
+                }
+            }
+
+        });
+    </script>
+
+</body>
+</html>
